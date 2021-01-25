@@ -279,15 +279,15 @@ class FirestoreSessionInterface(BackendSessionInterface):
         secure = self.cookie_secure or self.get_cookie_secure(app)
         expires = self.get_expiration_time(app, session)
 
-        if session.modified:
-            # The session was modified
-            store_id = self.key_prefix + session.get_sid(self.cookie_name)
-            val = {'_expiration': expires, '_permanent': session.is_permanent(self.cookie_name)}
-            val.update(dict(session))
-            try:
-                self.store.document(store_id).set(val)
-            except Exception as e:
-                log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
+        # if session.modified:
+        # The session was modified
+        store_id = self.key_prefix + session.get_sid(self.cookie_name)
+        val = {'_expiration': expires, '_permanent': session.is_permanent(self.cookie_name)}
+        val.update(dict(session))
+        try:
+            self.store.document(store_id).set(val)
+        except Exception as e:
+            log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
         if self.use_signer:
             session_id = self._get_signer(app).sign(want_bytes(session.get_sid(self.cookie_name)))
@@ -385,16 +385,16 @@ class RedisSessionInterface(BackendSessionInterface):
         secure = self.cookie_secure or self.get_cookie_secure(app)
         expires = self.get_expiration_time(app, session)
 
-        if session.modified:
-            # The session was modified
-            store_id = self.key_prefix + session.get_sid(self.cookie_name)
-            data = {'_permanent': session.is_permanent(self.cookie_name)}
-            data.update(dict(session))
-            val = self.serializer.dumps(data)
-            try:
-                self.client.setex(name=store_id, value=val, time=total_seconds(expires))
-            except Exception as e:
-                log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
+        # if session.modified:
+        # The session was modified
+        store_id = self.key_prefix + session.get_sid(self.cookie_name)
+        data = {'_permanent': session.is_permanent(self.cookie_name)}
+        data.update(dict(session))
+        val = self.serializer.dumps(data)
+        try:
+            self.client.setex(name=store_id, value=val, time=total_seconds(expires))
+        except Exception as e:
+            log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
         if self.use_signer:
             session_id = self._get_signer(app).sign(want_bytes(session.get_sid(self.cookie_name)))
@@ -493,18 +493,18 @@ class MongoDBSessionInterface(BackendSessionInterface):
         secure = self.cookie_secure or self.get_cookie_secure(app)
         expires = self.get_expiration_time(app, session)
 
-        if session.modified:
-            # The session was modified
-            store_id = self.key_prefix + session.get_sid(self.cookie_name)
-            val = self.serializer.dumps(dict(session))
-            try:
-                self.store.update({'id': store_id},
-                                  {'id': store_id,
-                                   'val': val,
-                                   '_expiration': expires,
-                                   '_permanent': session.is_permanent(self.cookie_name)}, True)
-            except Exception as e:
-                log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
+        # if session.modified:
+        # The session was modified
+        store_id = self.key_prefix + session.get_sid(self.cookie_name)
+        val = self.serializer.dumps(dict(session))
+        try:
+            self.store.update({'id': store_id},
+                              {'id': store_id,
+                               'val': val,
+                               '_expiration': expires,
+                               '_permanent': session.is_permanent(self.cookie_name)}, True)
+        except Exception as e:
+            log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
         if self.use_signer:
             session_id = self._get_signer(app).sign(want_bytes(session.get_sid(self.cookie_name)))
@@ -612,16 +612,16 @@ class MemcachedSessionInterface(BackendSessionInterface):
         secure = self.cookie_secure or self.get_cookie_secure(app)
         expires = self.get_expiration_time(app, session)
 
-        if session.modified:
-            # The session was modified
-            data = {'_permanent': session.is_permanent(self.cookie_name)}
-            data.update(dict(session))
-            val = self.serializer.dumps(data)
+        # if session.modified:
+        # The session was modified
+        data = {'_permanent': session.is_permanent(self.cookie_name)}
+        data.update(dict(session))
+        val = self.serializer.dumps(data)
 
-            try:
-                self.client.set(store_id, val, self._get_memcache_timeout(total_seconds(expires)))
-            except Exception as e:
-                log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
+        try:
+            self.client.set(store_id, val, self._get_memcache_timeout(total_seconds(expires)))
+        except Exception as e:
+            log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
         if self.use_signer:
             session_id = self._get_signer(app).sign(want_bytes(session.get_sid(self.cookie_name)))
