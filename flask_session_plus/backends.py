@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 import hashlib
 
-from flask.helpers import total_seconds
 from flask.json.tag import TaggedJSONSerializer
 from pytz import utc
 from flask.sessions import SessionInterface as FlaskSessionInterface
@@ -392,7 +391,7 @@ class RedisSessionInterface(BackendSessionInterface):
         data.update(dict(session))
         val = self.serializer.dumps(data)
         try:
-            self.client.setex(name=store_id, value=val, time=total_seconds(expires))
+            self.client.setex(name=store_id, value=val, time=timedelta.total_seconds(expires))
         except Exception as e:
             log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
@@ -619,7 +618,7 @@ class MemcachedSessionInterface(BackendSessionInterface):
         val = self.serializer.dumps(data)
 
         try:
-            self.client.set(store_id, val, self._get_memcache_timeout(total_seconds(expires)))
+            self.client.set(store_id, val, self._get_memcache_timeout(timedelta.total_seconds(expires)))
         except Exception as e:
             log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
