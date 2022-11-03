@@ -391,7 +391,7 @@ class RedisSessionInterface(BackendSessionInterface):
         data.update(dict(session))
         val = self.serializer.dumps(data)
         try:
-            self.client.setex(name=store_id, value=val, time=timedelta.total_seconds(expires))
+            self.client.setex(name=store_id, value=val, time=timedelta.total_seconds(expires - datetime.datetime(1900, 1, 1)))
         except Exception as e:
             log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
