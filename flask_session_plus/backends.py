@@ -618,7 +618,7 @@ class MemcachedSessionInterface(BackendSessionInterface):
         val = self.serializer.dumps(data)
 
         try:
-            self.client.set(store_id, val, self._get_memcache_timeout(timedelta.total_seconds(expires)))
+            self.client.set(store_id, val, self._get_memcache_timeout(timedelta.total_seconds(expires - datetime.datetime(1900, 1, 1)))))
         except Exception as e:
             log.error('Error while updating session (session id: {}): {}'.format(store_id, str(e)))
 
